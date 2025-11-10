@@ -7,6 +7,6 @@ namespace Todo.Model
         public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options)
         {
         } 
-       public DbSet<Todo> TodoItems { get; set; }
+       public DbSet<TodoItem> TodoItems { get; set; }
     }
 }

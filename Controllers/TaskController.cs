@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Todo.Model;
+using System.Linq;
 
 namespace Todo.Controllers
 {
@@ -16,41 +18,69 @@ namespace Todo.Controllers
         }
 
         [HttpGet]
+
+        [HttpGet]
         public IActionResult GetTasks()
         {
-            var tasks = _context.TodoItems.ToList();
+            var tasks = _context.TodoItems.Where(t => !t.IsDeleted).ToList();
             return Ok(tasks);
         }
 
+
         [HttpPost]
-        public IActionResult SaveTasks(Task task)
+        public IActionResult SaveTasks([FromBody] TodoItem task)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _context.TodoItems.Add(task);
             _context.SaveChanges();
             return Ok(task);
         }
 
-        [HttpPut]
-        public IActionResult UpdateTasks(Task task)
-        {
-            var record = _context.TodoItems.Find(Task.TaskID);
-            if (record == null)
-            {
-                var notFoundResponse = new
-                {
-                    status = "Error",
-                    Message = "Task not Found."
-                };
-                return NotFound(notFoundResponse);
-            } else
-            {
-                record.TaskName = task.TaskName;
-                record.
-                return Ok(task);
 
-            }
-                
-            
+        [HttpPut]
+        public IActionResult UpdateTask([FromBody] TodoItem task)
+        {
+            var record = _context.TodoItems.Find(task.TaskID);
+            if (record == null)
+                return NotFound(new { status = "Error", message = "Task not found." });
+
+            record.TaskName = task.TaskName;
+            record.StatusID = task.StatusID;
+            record.IsDeleted = task.IsDeleted;
+            _context.SaveChanges();
+            return Ok(record);
         }
+
+
+ 
+
+        [HttpDelete("{id}")]
+
+
+        public IActionResult DeleteTaskById(int id)
+        {
+            var record = _context.TodoItems.Find(id);
+            if (record == null)
+                return NotFound(new { status = "Error", message = "Task not found." });
+
+            record.IsDeleted = true;
+            _context.SaveChanges();
+            return Ok(new { status = "Deleted", id });
+        }
+
+
     }
 }
+
+
+
+
+ 
+
+
+
+
+
+

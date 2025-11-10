@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Todo.Model
 {
     [Table("Task")]
-    public class Todo
+    public class TodoItem
     {
         [Key]
         [Required]
@@ -17,8 +17,9 @@ namespace Todo.Model
         [Required]
         public int StatusID { get; set; }
         [Required]
-        public bool IsDeleted { get; set; }
-        
+        public bool IsDeleted { get; set; } = false;
+
     }
 }
+
 
